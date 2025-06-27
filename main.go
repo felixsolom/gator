@@ -1,21 +1,68 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
+	"os"
 
+	"github.com/felixsolom/gator/internal/commands"
 	"github.com/felixsolom/gator/internal/config"
+	"github.com/felixsolom/gator/internal/database"
+	_ "github.com/lib/pq"
 )
 
 func main() {
-	configStruct, err := config.Read(".gatorconfig.json", &config.Config{})
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Panic:", r)
+		}
+	}()
+	cfg, err := config.Read(".gatorconfig.json", &config.Config{})
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Warning: using default config", err)
+		cfg = &config.Config{}
 	}
-	configStruct.SetUser("felix")
-	config.Write(".gatorconfig.json", configStruct)
-	configStruct, err = config.Read(".gatorconfig.json", &config.Config{})
+
+	if cfg.DbURL == "" {
+		cfg.DbURL = database.DbURL
+	}
+	fmt.Println("Using connection string:", cfg.DbURL)
+	//connStr := "postgres://felixsolomon:@localhost:5432/gator?sslmode=disable"
+	db, err := sql.Open("postgres", cfg.DbURL)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Database connection failed", err)
+		os.Exit(1)
 	}
-	fmt.Printf("%+v\n", *configStruct)
+	defer db.Close()
+
+	dbQueries := database.New(db)
+
+	state := &commands.State{
+		Db:              dbQueries,
+		PointerToConfig: cfg,
+	}
+
+	args := os.Args
+	if len(args) < 3 {
+		fmt.Println("a command is needed to proceed")
+		os.Exit(1)
+	}
+
+	commandsStruct := commands.NewCommandsStruct()
+	commandsStruct.Register("register", commands.HandlerRegister)
+	commandsStruct.Register("login", commands.HandlerLogin)
+	fmt.Printf("Registered commands: %v\n", commandsStruct.Mapped)
+
+	commandName := args[1]
+	commandArgs := args[2:]
+	currentCommand := commands.Command{
+		Name: commandName,
+		Args: commandArgs,
+	}
+	if err := commandsStruct.Run(state, currentCommand); err != nil {
+		fmt.Printf("error executing %s: %v\n", commandName, err)
+	}
+	if err := config.Write(".gatorconfig.json", state.PointerToConfig); err != nil {
+		fmt.Println("error writing to json file", err)
+	}
 }

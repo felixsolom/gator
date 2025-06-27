@@ -11,7 +11,7 @@ func FilePath(path string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to get user home directory: %v", err)
 	}
-	ProjectFir := filepath.Join(homeDir, "workspace/github.com/felixsolom/gator/")
-	fPath := filepath.Join(ProjectFir, path)
+	//ProjectDir := filepath.Join(homeDir, "workspace/github.com/felixsolom/gator/")
+	fPath := filepath.Join(homeDir, path)
 	return fPath, nil
 }
