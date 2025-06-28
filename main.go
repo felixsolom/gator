@@ -24,7 +24,7 @@ func main() {
 	}
 
 	if cfg.DbURL == "" {
-		cfg.DbURL = database.DbURL
+		cfg.DbURL = database.DbURL + "?sslmode=disable"
 	}
 	fmt.Println("Using connection string:", cfg.DbURL)
 	//connStr := "postgres://felixsolomon:@localhost:5432/gator?sslmode=disable"
@@ -43,14 +43,15 @@ func main() {
 	}
 
 	args := os.Args
-	if len(args) < 3 {
-		fmt.Println("a command is needed to proceed")
+	if len(args) < 2 {
+		fmt.Println("Command name is needed to proceed")
 		os.Exit(1)
 	}
 
 	commandsStruct := commands.NewCommandsStruct()
 	commandsStruct.Register("register", commands.HandlerRegister)
 	commandsStruct.Register("login", commands.HandlerLogin)
+	commandsStruct.Register("reset", commands.HandlerResetAll)
 	fmt.Printf("Registered commands: %v\n", commandsStruct.Mapped)
 
 	commandName := args[1]
@@ -61,8 +62,9 @@ func main() {
 	}
 	if err := commandsStruct.Run(state, currentCommand); err != nil {
 		fmt.Printf("error executing %s: %v\n", commandName, err)
+		os.Exit(1)
 	}
 	if err := config.Write(".gatorconfig.json", state.PointerToConfig); err != nil {
-		fmt.Println("error writing to json file", err)
+		fmt.Printf("error writing to json file, error: %v", err)
 	}
 }

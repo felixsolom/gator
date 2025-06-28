@@ -11,7 +11,7 @@ import (
 
 func HandlerRegister(s *State, cmd Command) error {
 	if len(cmd.Args) == 0 {
-		return fmt.Errorf("command name is needed")
+		return fmt.Errorf("please provide valid name")
 	}
 
 	params := database.CreateUserParams{
@@ -29,6 +29,7 @@ func HandlerRegister(s *State, cmd Command) error {
 	fmt.Printf("User id: %v\n", user.ID)
 	fmt.Printf("User created at: %v\n", user.CreatedAt)
 	fmt.Printf("User name: %v\n", user.Name)
+	s.PointerToConfig.SetUser(user.Name)
 
 	return nil
 }
