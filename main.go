@@ -53,6 +53,8 @@ func main() {
 	commandsStruct.Register("login", commands.HandlerLogin)
 	commandsStruct.Register("reset", commands.HandlerResetAll)
 	commandsStruct.Register("users", commands.HandlerUsers)
+	commandsStruct.Register("agg", commands.HandlerAgg)
+	commandsStruct.Register("addfeed", commands.HandlerAddFeed)
 	fmt.Printf("Registered commands: %v\n", commandsStruct.Mapped)
 
 	commandName := args[1]
