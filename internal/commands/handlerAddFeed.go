@@ -42,5 +42,24 @@ func HandlerAddFeed(s *State, cmd Command) error {
 	fmt.Printf("Name: %v\n", feed.Name)
 	fmt.Printf("Url: %v\n", feed.Url)
 	fmt.Printf("User's ID: %v\n", feed.UserID.UUID)
+
+	feedID := database.NullUUID{
+		UUID:  feed.ID,
+		Valid: true,
+	}
+
+	feedFollowParams := database.CreateFeedFollowParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UserID:    uuid.NullUUID(userID),
+		FeedID:    uuid.NullUUID(feedID),
+	}
+	row, err := s.Db.CreateFeedFollow(context.Background(), feedFollowParams)
+	if err != nil {
+		return fmt.Errorf("couldn't articulate user's followed feed. error: %w", err)
+	}
+	fmt.Printf("feed's name: %v\n", row.FeedName)
+	fmt.Printf("user's name: %v\n", row.UserName)
 	return nil
 }

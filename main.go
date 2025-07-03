@@ -56,6 +56,8 @@ func main() {
 	commandsStruct.Register("agg", commands.HandlerAgg)
 	commandsStruct.Register("addfeed", commands.HandlerAddFeed)
 	commandsStruct.Register("feeds", commands.HandlerFeeds)
+	commandsStruct.Register("follow", commands.HandlerFollow)
+	commandsStruct.Register("following", commands.HandlerFollowing)
 	fmt.Printf("Registered commands: %v\n", commandsStruct.Mapped)
 
 	commandName := args[1]
