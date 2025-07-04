@@ -1,19 +1,27 @@
 package commands
 
 import (
-	"context"
 	"fmt"
+	"time"
 
-	"github.com/felixsolom/gator/internal/rss"
+	"github.com/felixsolom/gator/internal/database"
+	"github.com/google/uuid"
 )
 
-func HandlerAgg(s *State, cmd Command) error {
-	feedURL := "https://www.wagslane.dev/index.xml"
-	rssFeed, err := rss.FetchFeed(context.Background(), feedURL)
-	if err != nil {
-		return fmt.Errorf("error %w", err)
+func HandlerAgg(s *State, cmd Command, user database.User) error {
+	if len(cmd.Args) == 0 {
+		return fmt.Errorf("please provide time period between requests")
 	}
-	rssFeed = rss.UnescapedRSS(rssFeed)
-	fmt.Println(rssFeed)
-	return nil
+	timeBetweenRequests, err := time.ParseDuration(cmd.Args[0])
+	if err != nil {
+		return fmt.Errorf("please provide valid time format: %w", err)
+	}
+	ticker := time.NewTicker(timeBetweenRequests)
+	userID := database.NullUUID{
+		UUID:  user.ID,
+		Valid: true,
+	}
+	for ; ; <-ticker.C {
+		ScrapeFeeds(s, cmd, uuid.NullUUID(userID))
+	}
 }

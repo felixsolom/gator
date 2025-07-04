@@ -54,7 +54,6 @@ func main() {
 	commandsStruct.Register("login", commands.HandlerLogin)
 	commandsStruct.Register("reset", commands.HandlerResetAll)
 	commandsStruct.Register("users", commands.HandlerUsers)
-	commandsStruct.Register("agg", commands.HandlerAgg)
 	commandsStruct.Register("feeds", commands.HandlerFeeds)
 	commandsStruct.Register("addfeed",
 		middleware.MiddlewareLoggedIn(commands.HandlerAddFeed))
@@ -64,6 +63,8 @@ func main() {
 		middleware.MiddlewareLoggedIn(commands.HandlerFollowing))
 	commandsStruct.Register("unfollow",
 		middleware.MiddlewareLoggedIn(commands.HandlerUnfollow))
+	commandsStruct.Register("agg",
+		middleware.MiddlewareLoggedIn(commands.HandlerAgg))
 	fmt.Printf("Registered commands: %v\n", commandsStruct.Mapped)
 
 	commandName := args[1]
