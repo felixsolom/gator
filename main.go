@@ -62,6 +62,8 @@ func main() {
 		middleware.MiddlewareLoggedIn(commands.HandlerFollow))
 	commandsStruct.Register("following",
 		middleware.MiddlewareLoggedIn(commands.HandlerFollowing))
+	commandsStruct.Register("unfollow",
+		middleware.MiddlewareLoggedIn(commands.HandlerUnfollow))
 	fmt.Printf("Registered commands: %v\n", commandsStruct.Mapped)
 
 	commandName := args[1]
