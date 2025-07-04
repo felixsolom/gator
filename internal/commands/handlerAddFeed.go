@@ -9,19 +9,16 @@ import (
 	"github.com/google/uuid"
 )
 
-func HandlerAddFeed(s *State, cmd Command) error {
+func HandlerAddFeed(s *State, cmd Command, user database.User) error {
 	if len(cmd.Args) == 0 {
 		return fmt.Errorf("please provide a name and a link for the feed")
 	}
 	if len(cmd.Args) == 1 {
 		return fmt.Errorf("please provide a link for the feed")
 	}
-	currentUser, err := s.Db.GetUser(context.Background(), s.PointerToConfig.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("coudn't fetch current user %w", err)
-	}
+
 	userID := database.NullUUID{
-		UUID:  currentUser.ID,
+		UUID:  user.ID,
 		Valid: true,
 	}
 	params := database.CreateFeedParams{

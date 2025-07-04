@@ -9,14 +9,9 @@ import (
 	"github.com/google/uuid"
 )
 
-func HandlerFollow(s *State, cmd Command) error {
+func HandlerFollow(s *State, cmd Command, user database.User) error {
 	if len(cmd.Args) == 0 {
 		return fmt.Errorf("please provide a valid link to a feed")
-	}
-
-	currentUser, err := s.Db.GetUser(context.Background(), s.PointerToConfig.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("coudn't fetch current user %w", err)
 	}
 
 	feed, err := s.Db.FeedByUrl(context.Background(), cmd.Args[0])
@@ -30,7 +25,7 @@ func HandlerFollow(s *State, cmd Command) error {
 	}
 
 	userID := database.NullUUID{
-		UUID:  currentUser.ID,
+		UUID:  user.ID,
 		Valid: true,
 	}
 

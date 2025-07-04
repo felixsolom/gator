@@ -8,6 +8,7 @@ import (
 	"github.com/felixsolom/gator/internal/commands"
 	"github.com/felixsolom/gator/internal/config"
 	"github.com/felixsolom/gator/internal/database"
+	"github.com/felixsolom/gator/internal/middleware"
 	_ "github.com/lib/pq"
 )
 
@@ -54,10 +55,13 @@ func main() {
 	commandsStruct.Register("reset", commands.HandlerResetAll)
 	commandsStruct.Register("users", commands.HandlerUsers)
 	commandsStruct.Register("agg", commands.HandlerAgg)
-	commandsStruct.Register("addfeed", commands.HandlerAddFeed)
 	commandsStruct.Register("feeds", commands.HandlerFeeds)
-	commandsStruct.Register("follow", commands.HandlerFollow)
-	commandsStruct.Register("following", commands.HandlerFollowing)
+	commandsStruct.Register("addfeed",
+		middleware.MiddlewareLoggedIn(commands.HandlerAddFeed))
+	commandsStruct.Register("follow",
+		middleware.MiddlewareLoggedIn(commands.HandlerFollow))
+	commandsStruct.Register("following",
+		middleware.MiddlewareLoggedIn(commands.HandlerFollowing))
 	fmt.Printf("Registered commands: %v\n", commandsStruct.Mapped)
 
 	commandName := args[1]
