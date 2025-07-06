@@ -34,5 +34,5 @@ it needs a time refresh constraint. 2s or 10h, or anything in the middle. it can
 ### browse
 needs a number of posts added to it, to know how many posts to display to you in the terminal
 
-This is so far.. Enjoy!
+This is it so far.. Enjoy!
 
