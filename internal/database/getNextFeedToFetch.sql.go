@@ -12,9 +12,12 @@ import (
 )
 
 const getNextFeedToFetch = `-- name: GetNextFeedToFetch :one
-SELECT id, created_at, updated_at, name, url, user_id, last_fetched_at FROM feeds
-WHERE user_id=$1
-ORDER BY last_fetched_at NULLS FIRST
+SELECT feeds.id, feeds.created_at, feeds.updated_at, feeds.name, feeds.url, feeds.user_id, feeds.last_fetched_at
+FROM feeds
+INNER JOIN feed_follows ON feeds.id = feed_follows.feed_id
+WHERE feed_follows.user_id = $1
+ORDER BY feeds.last_fetched_at NULLS FIRST
+LIMIT 1
 `
 
 func (q *Queries) GetNextFeedToFetch(ctx context.Context, userID uuid.NullUUID) (Feed, error) {

@@ -16,6 +16,8 @@ func HandlerAgg(s *State, cmd Command, user database.User) error {
 	if err != nil {
 		return fmt.Errorf("please provide valid time format: %w", err)
 	}
+	fmt.Println("======+ RUNNING AGGREGATOR +======")
+	fmt.Println("------ Press Ctrl-C to quit ------")
 	ticker := time.NewTicker(timeBetweenRequests)
 	userID := database.NullUUID{
 		UUID:  user.ID,

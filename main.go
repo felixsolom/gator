@@ -27,7 +27,7 @@ func main() {
 	if cfg.DbURL == "" {
 		cfg.DbURL = database.DbURL + "?sslmode=disable"
 	}
-	fmt.Println("Using connection string:", cfg.DbURL)
+	//fmt.Println("Using connection string:", cfg.DbURL)
 	//connStr := "postgres://felixsolomon:@localhost:5432/gator?sslmode=disable"
 	db, err := sql.Open("postgres", cfg.DbURL)
 	if err != nil {
@@ -65,7 +65,9 @@ func main() {
 		middleware.MiddlewareLoggedIn(commands.HandlerUnfollow))
 	commandsStruct.Register("agg",
 		middleware.MiddlewareLoggedIn(commands.HandlerAgg))
-	fmt.Printf("Registered commands: %v\n", commandsStruct.Mapped)
+	commandsStruct.Register("browse",
+		middleware.MiddlewareLoggedIn(commands.HandlerBrowse))
+	//fmt.Printf("Registered commands: %v\n", commandsStruct.Mapped)
 
 	commandName := args[1]
 	commandArgs := args[2:]
